@@ -1,9 +1,28 @@
 const express = require('express')
 const app = express()
-const PORT = process.env.PORT ||4000
 const path = require('path')
+const { logger } = require('./middleware/logger')
+const { errorHandler } = require('./middleware/errorHandler')
+const cookieParser = require('cookie-parser')
+const cors = require('cors')
+const corsOptions =  require('./config/corsOrigin')
+const PORT = process.env.PORT ||4000
 
-app.use('/', express.static(path.join(__dirname, '/public')))
+
+
+// save logs to file middleware
+app.use(logger)
+
+app.use(cors(corsOptions))
+
+// middleware to use json
+app.use(express.json())
+
+// middleware passes cookies
+app.use(cookieParser()) 
+
+// middleware to serve static/html content
+app.use('/', express.static(path.join(__dirname, '/public'))) 
 
 app.use('/', require('./routes/root'))
 
@@ -19,5 +38,8 @@ app.all('*', (req, res) => {
     }
 
 })
+
+app.use(errorHandler) // error handler middleware
+console.log('eror handler middleware passed')
 
 app.listen(PORT, () => console.log(`server running on port ${PORT}`))
