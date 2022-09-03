@@ -19,7 +19,6 @@ export default function NewUserForm() {
 
     const navigate = useNavigate()
 
-
     const [username, setUsername] = useState('')
     const [validUsername, setValidUsername] = useState(false)
     const [password, setPassword] = useState('')
@@ -42,22 +41,22 @@ export default function NewUserForm() {
             navigate('/dash/users')
         }
     }, [isSuccess, navigate])
-    
+
     const onUsernameChanged = e => setUsername(e.target.value)
     const onPasswordChanged = e => setPassword(e.target.value)
 
     const onRolesChanged = e => {
         const values = Array.from(
-            e.target.selectedOptions, // HTMLCollection
+            e.target.selectedOptions, //HTMLCollection 
             (option) => option.value
-            )
-            setRoles(values)
+        )
+        setRoles(values)
     }
 
     const canSave = [roles.length, validUsername, validPassword].every(Boolean) && !isLoading
-    
+
     const onSaveUserClicked = async (e) => {
-        e.preventDefault();
+        e.preventDefault()
         if (canSave) {
             await addNewUser({ username, password, roles })
         }
@@ -66,19 +65,18 @@ export default function NewUserForm() {
     const options = Object.values(ROLES).map(role => {
         return (
             <option
-              key={role}
-              value={role}
-            >
-                {role}
-            </option>
+                key={role}
+                value={role}
+
+            > {role}</option >
         )
     })
-
 
     const errClass = isError ? "errmsg" : "offscreen"
     const validUserClass = !validUsername ? 'form__input--incomplete' : ''
     const validPwdClass = !validPassword ? 'form__input--incomplete' : ''
     const validRolesClass = !Boolean(roles.length) ? 'form__input--incomplete' : ''
+
 
     const content = (
         <>
@@ -138,5 +136,5 @@ export default function NewUserForm() {
         </>
     )
 
-  return content
+    return content
 }
