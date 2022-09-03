@@ -76,7 +76,8 @@ export default function EditUserForm({ user }) {
     await deleteUser({ id: user.id })
   }
 
-  const options = Object.value(ROLES).map(role => {
+  const options = Object.values(ROLES).map(role => {
+    console.log('role', role)
     return (
       <option
          key={role}
