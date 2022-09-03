@@ -1,7 +1,9 @@
 import { createSelector, createEntityAdapter } from "@reduxjs/toolkit";
 import { apiSlice } from "../../rtk/api/apiSlice";
 
-const notesAdapters = createEntityAdapter({})
+const notesAdapters = createEntityAdapter({
+    sortComparer: (a, b) => (a.completed === b.completed) ? 0 : a.completed ? 1: -1
+})
 
 const initialState = notesAdapters.getInitialState()
 
@@ -48,6 +50,8 @@ const selectNotesData = createSelector(
 
 // getSelectors create these selectors and we rename them with aliases using destructuring
 export const {
-    selectAll: selectAllNotes, 
-
+    selectAll: selectAllNotes,
+    selectById: selectNoteById,
+    selectIds: selectNoteIds
+    // Pass in a selector that returns the notes slice of state
 } = notesAdapters.getSelectors(state => selectNotesData(state) ?? initialState)
