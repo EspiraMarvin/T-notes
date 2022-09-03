@@ -9,7 +9,6 @@ const cors = require('cors')
 const corsOptions =  require('./config/corsOrigin')
 const connectDb = require('./config/dbConn')
 const mongoose = require('mongoose')
-
 const PORT = process.env.PORT ||4000
 
 console.log(process.env.NODE_ENV)
@@ -31,6 +30,9 @@ app.use(cookieParser())
 app.use('/', express.static(path.join(__dirname, '/public'))) 
 
 app.use('/', require('./routes/root'))
+app.use('/users', require('./routes/userRoutes'))
+app.use('/notes', require('./routes/noteRoutes'))
+
 
 app.all('*', (req, res) => {
 // 404 not found error
