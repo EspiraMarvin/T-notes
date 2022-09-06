@@ -1,6 +1,10 @@
 const express = require('express')
 const router = express.Router()
 const notesController = require('../controllers/notesController')
+const verifyJWT = require('../middleware/verifyJwt')
+
+// apply verify jwt middleware to all notes routes
+router.use(verifyJWT)
 
 router.route('/')
 .get(notesController.getAllNotes)

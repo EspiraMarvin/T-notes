@@ -12,7 +12,6 @@ export const usersApiSlice = apiSlice.injectEndpoints({
             validateStatus: (response, result) => {
                 return response.status === 200 && !result.isError
             },
-            keepUnusedDataFor: 5, // default 60 seconds for caching data
             transformResponse: responseData => {
                 const loadedUsers = responseData.map(user => {
                     console.log('user at userApiSlice', user)
@@ -29,12 +28,50 @@ export const usersApiSlice = apiSlice.injectEndpoints({
                     ]
                 } else return [{ type: 'User', id: 'LIST' }]
             }
+        }),
+        addNewUser: builder.mutation({
+            query: initialUserData => ({
+                url: '/users',
+                method: 'POST',
+                body: {
+                    ...initialUserData
+                }
+            }),
+            invalidatesTags: [
+                { type: 'User', id: 'LIST'}
+            ]
+        }),
+        updateUser: builder.mutation({
+            query: initialUserData => ({
+                url: '/users',
+                method: 'PATCH',
+                body: {
+                    ...initialUserData
+                }
+            }),  
+            invalidatesTags: ((result, error, arg) => [
+                { type: 'User', id: arg.id }
+            ]) 
+        }),
+        deleteUser: builder.mutation({
+            query: ({ id }) => ({
+                url: '/users',
+                method: 'DELETE',
+                body: { id }                
+            }),    
+            invalidatesTags: (result, error, arg) => [
+                { type: 'User', id: arg.id }
+            ]
         })
+
     })
 })
 
 export const {
-   useGetUsersQuery
+   useGetUsersQuery,
+   useAddNewUserMutation,
+   useUpdateUserMutation, 
+   useDeleteUserMutation
 } = usersApiSlice
 
 // return the query result object

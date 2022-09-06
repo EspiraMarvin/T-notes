@@ -1,7 +1,9 @@
 import { createSelector, createEntityAdapter } from "@reduxjs/toolkit";
 import { apiSlice } from "../../rtk/api/apiSlice";
 
-const notesAdapters = createEntityAdapter({})
+const notesAdapters = createEntityAdapter({
+    sortComparer: (a, b) => (a.completed === b.completed) ? 0 : a.completed ? 1: -1
+})
 
 const initialState = notesAdapters.getInitialState()
 
@@ -12,7 +14,6 @@ export const notesApiSlice = apiSlice.injectEndpoints({
             validateStatus: (response, result) => {
                 return response.status === 200 && !result.isError
             },
-            keepUnusedDataFor: 5, // default 60 seconds for caching data
             transformResponse: responseData => {
                 const loadedNotes = responseData.map(note => {
                     console.log('note at noteApiSlice', note)
@@ -29,12 +30,49 @@ export const notesApiSlice = apiSlice.injectEndpoints({
                     ]
                 } else return [{ type: 'Note', id: 'LIST' }]
             }
+        }),
+        addNewNote: builder.mutation({
+            query: initialNote => ({
+                url: '/notes',
+                method: 'POST',
+                body: {
+                    ...initialNote,
+                }
+            }),
+            invalidatesTags: [
+                { type: 'Note', id: "LIST" }
+            ]
+        }),
+        updateNote: builder.mutation({
+            query: initialNote => ({
+                url: '/notes',
+                method: 'PATCH',
+                body: {
+                    ...initialNote,
+                }
+            }),
+            invalidatesTags: (result, error, arg) => [
+                { type: 'Note', id: arg.id }
+            ]
+        }),
+        deleteNote: builder.mutation({
+            query: ({ id }) => ({
+                url: `/notes`,
+                method: 'DELETE',
+                body: { id }
+            }),
+            invalidatesTags: (result, error, arg) => [
+                { type: 'Note', id: arg.id }
+            ]
         })
     })
 })
 
 export const {
-   useGetNotesQuery
+   useGetNotesQuery,
+   useAddNewNoteMutation,
+   useUpdateNoteMutation,
+   useDeleteNoteMutation,
 } = notesApiSlice
 
 // return the query result object
@@ -48,6 +86,8 @@ const selectNotesData = createSelector(
 
 // getSelectors create these selectors and we rename them with aliases using destructuring
 export const {
-    selectAll: selectAllNotes, 
-
+    selectAll: selectAllNotes,
+    selectById: selectNoteById,
+    selectIds: selectNoteIds
+    // Pass in a selector that returns the notes slice of state
 } = notesAdapters.getSelectors(state => selectNotesData(state) ?? initialState)
