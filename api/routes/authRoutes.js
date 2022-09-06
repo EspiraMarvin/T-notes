@@ -5,7 +5,6 @@ const loginLimiter = require('../middleware/loginLimiter')
 
 router.router('/')
     .post(loginLimiter, authController.login)
-
   
 router.router('/refresh')
     .get(authController.refresh)    
