@@ -31,8 +31,8 @@ const login = asyncHandler(async(req, res) => {
                 "roles": foundUser.roles
             }
         },
-        process.env.ACESS_TOKEN_SECRET,
-        { expiresIn: '10s'}
+        process.env.ACCESS_TOKEN_SECRET,
+        { expiresIn: '1m'}
     )
 
     const refreshToken = jwt.sign(
@@ -83,7 +83,7 @@ const refresh = (req, res) => {
                     }
                 },
                 process.env.ACCESS_TOKEN_SECRET,
-                { expiresIn: '10s' }
+                { expiresIn: '1m' }
             )
 
             res.json({ accessToken })
@@ -96,7 +96,7 @@ const refresh = (req, res) => {
 // @access Public - just to clear cookie if exists
 const logout = (req, res) => {
     const cookies = req.cookies
-    if (!cookies?.jwt) return res.statusCode(204) // No content
+    if (!cookies?.jwt) return res.sendStatus(204) // No content
     res.clearCookie('jwt', { httpOnly: true, sameSite: 'None', secure: true })
     res.json({ message: 'Cookie cleared' })
 }
