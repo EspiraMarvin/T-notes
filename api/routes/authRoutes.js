@@ -3,13 +3,13 @@ const router = express.Router()
 const authController = require('../controllers/authController')
 const loginLimiter = require('../middleware/loginLimiter')
 
-router.router('/')
+router.route('/')
     .post(loginLimiter, authController.login)
   
-router.router('/refresh')
+router.route('/refresh')
     .get(authController.refresh)    
 
-router.router('/logout')
+router.route('/logout')
     .post(authController.logout)       
 
 module.exports = router    
