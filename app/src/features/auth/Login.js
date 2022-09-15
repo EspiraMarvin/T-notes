@@ -4,10 +4,12 @@ import { useNavigate, Link } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { setCredentials } from './authSlice'
 import { useLoginMutation } from './authApiSlice'
-
 import usePersist from '../../hooks/usePersist'
+import PulseLoader from 'react-spinners/PulseLoader'
+import useTitle from '../../hooks/useTitle'
 
 export default function Login() {
+  useTitle('Sign User')
   const userRef = useRef()
   const errRef = useRef()
   const [username, setUsername] = useState('')
@@ -59,8 +61,7 @@ export default function Login() {
   const handlePwdInput = (e) => setPassword(e.target.value)
   const handleToggle = () => setPersist(prev => !prev)
   
-  if (isLoading) return <p>Loading...</p>
-
+  if (isLoading) return  <PulseLoader color={"#FFF"} />
   const content = (
       <section className="public">
           <header>

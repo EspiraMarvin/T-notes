@@ -1,36 +1,39 @@
 const User = require('../models/User')
 const Note = require('../models/Note')
-const asyncHandler = require('express-async-handler')
+// const asyncHandler = require('express-async-handler')
 const bcrypt = require('bcrypt')
 
 // @desc Get al users
 // @router GET /users
 // @ccess Private
-const getAllUsers = asyncHandler(async (req, res) => {
+const getAllUsers = async (req, res) => {
     const users = await User.find().select('-password').lean()    // lean() does not return the methods attached to User model // select('-password') means dont return users with passwords 
     if (!users?.length) return res.status(400).json({ message: "No Users Found" })
     res.json(users)
-})
+}
 
 // @desc Create new user
 // @router POST /users
 // @ccess Private
-const createNewUser = asyncHandler(async (req, res) => {
+const createNewUser = async (req, res) => {
     const { username, password, roles } = req.body
 
     // confirm data
-    if (!username || !password || !Array.isArray(roles) || !roles.length) {
+    if (!username || !password) {
         return res.status(400).json({ message: 'All fields are required' })            // 400 bad req
     }
 
     // check for duplicate
-    const duplicate = await User.findOne({ username }).lean().exec()
+    const duplicate = await User.findOne({ username }).collation({ locale: 'en', strength: 2}).lean().exec()
     if (duplicate) return res.status(409).json({ message: 'Duplicate username' })      // 409 conflict err
 
     // hash password
     const hashedPwd = await bcrypt.hash(password, 10) // 10 is the salt rounds
     
-    const userObject = { username, "password": hashedPwd, roles }
+    // if we've roles send username & pwd together with the roles else send username and pwd
+    const userObject = (!Array.isArray(roles) || !roles.length)
+    ? { username, "password": hashedPwd }
+    : { username, "password": hashedPwd, roles }
 
     //create and store new user
     const user = await User.create(userObject)
@@ -40,12 +43,12 @@ const createNewUser = asyncHandler(async (req, res) => {
     } else {
         res.status(400).json({ message: 'Invalid user data received' })
     }
-})
+}
 
 // @desc Update a user
 // @router PATCH /users
 // @ccess Private
-const updateUser = asyncHandler(async (req, res) => {
+const updateUser = async (req, res) => {
     const { id, username, roles, active, password } = req.body
     
     // confirm data
@@ -59,7 +62,7 @@ const updateUser = asyncHandler(async (req, res) => {
     if (!user) return res.status(400).json({ message: 'User not found' })
 
     // check for duplicate
-    const duplicate = await User.findOne({ username }).lean().exec()
+    const duplicate = await User.findOne({ username }).collation({ locale: 'en', strength: 2}).lean().exec()
     
     // Allow updates to the original user -- update the user with the id passed to req body only and not any other duplicate username incase exists
     if (duplicate && duplicate?._id.toString() !== id) {
@@ -76,16 +79,15 @@ const updateUser = asyncHandler(async (req, res) => {
     }
 
     const updatedUser = await user.save()
-    console.log('updatedUser', updatedUser)
 
     res.json({ message: `${updatedUser.username} updated` })
 
-})
+}
 
 // @desc Delete a user
 // @router DELETE /users
 // @ccess Private
-const deleteUser = asyncHandler(async (req, res) => {
+const deleteUser = async (req, res) => {
     const { id } = req.body
     
     if (!id) return res.status(400).json({ message: 'User ID Required '})
@@ -104,6 +106,6 @@ const deleteUser = asyncHandler(async (req, res) => {
     const reply = `Username ${result.username} with ID ${result._id} deleted`
 
     res.json(reply)
-})
+}
 
 module.exports = { getAllUsers, createNewUser, updateUser, deleteUser }
