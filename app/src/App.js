@@ -12,16 +12,23 @@ import EditNote from './features/notes/EditNote';
 import NewNote from './features/notes/NewNote';
 import Prefetch from './features/auth/Prefetch';
 import PersistLogin from './features/auth/PersistLogin';
+import RequireAuth from './features/auth/RequireAuth';
+import { ROLES } from './config/roles'
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<Layout />} >
+        {/* public routes  */}
         <Route index element={<Landing />} />
-
         <Route path="login" element={<Login />} />
+        {/* end of ppublic routes  */}
 
+
+      {/* protected routes */}
         <Route element={<PersistLogin />}>
+        <Route element={<RequireAuth allowedRoles={[...Object.values(ROLES)]} />}>
+
 
           <Route element={<Prefetch />}>
 
@@ -31,11 +38,14 @@ function App() {
             
             <Route index element={<Welcome />} />
 
-            <Route path="users">
-              <Route index element={<UsersList />}  />
-              <Route path=":id" element={<EditUser />}  />
-              <Route path="new" element={<NewUserForm />}  />
+            <Route element={<RequireAuth allowedRoles={[ROLES.Admin, ROLES.Manager]} />}>
+              <Route path="users">
+                <Route index element={<UsersList />}  />
+                <Route path=":id" element={<EditUser />}  />
+                <Route path="new" element={<NewUserForm />}  />
+              </Route>
             </Route>
+
 
             <Route path="notes">
               <Route index element={<NotesList />}  />
@@ -48,7 +58,9 @@ function App() {
           </Route>
         
         </Route>
-
+      {/* end of protected routes */}
+        
+      </Route>
       </Route>
     </Routes>
   );
