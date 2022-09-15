@@ -1,8 +1,11 @@
 import { useGetNotesQuery } from '../notes/notesApiSlice'
 import Note from './Note'
 import useAuth from '../../hooks/useAuth'
+import useTitle from '../../hooks/useTitle'
 
 export default function NotesList() {
+  useTitle('Notes List')
+
   const { username, isManager, isAdmin } = useAuth()
 
   const {
