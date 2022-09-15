@@ -44,7 +44,7 @@ export default function PersistLogin() {
         return () => effectRan.current = true  // clean up fun to set ref to true so it keeps data when component unmounts
        
         // eslint-disable-next-line
-    }, [])
+    }, []) 
 
     let content
     if (!persist) { // persist: no
@@ -57,7 +57,7 @@ export default function PersistLogin() {
         console.log('error')
         content = (
             <p className='errmsg'>
-                {error.data?.message}
+                {`${error?.data?.message} - `}
                 <Link to="/login">Please login again</Link>.
             </p>
         )
