@@ -1,10 +1,10 @@
 import { useSelector } from 'react-redux'
-import { selectCurreToken } from '../features/auth/authSlice'
+import { selectCurrentToken } from '../features/auth/authSlice'
 import jwtDecode from 'jwt-decode'
 
 
 const useAuth = () => {
-    const token = useSelector(selectCurreToken)
+    const token = useSelector(selectCurrentToken)
     let isManager = false
     let isAdmin = false
     let status = "Employee"
@@ -18,7 +18,7 @@ const useAuth = () => {
         isAdmin = roles.includes('Admin')
 
         if (isManager) status = "Manager"
-        if (isAdmin) status = "Adminb"
+        if (isAdmin) status = "Admin"
 
         return { username, roles, status, isManager, isAdmin }
     }
