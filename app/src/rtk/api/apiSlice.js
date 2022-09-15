@@ -2,7 +2,8 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { setCredentials } from '../../features/auth/authSlice'
 
 const baseQuery = fetchBaseQuery({
-    baseUrl: process.env.NODE_ENV === 'production' ? 'https://technotez-api.onrender.com/' : 'http://localhost:4000',
+    baseUrl: 'https://technotez-api.onrender.com',
+    // baseUrl: process.env.NODE_ENV === 'production' ? 'https://technotez-api.onrender.com' : 'http://localhost:4000',
     // baseUrl: 'http://localhost:4000',
     credentials: 'include',
     prepareHeaders: (headers, { getState }) => {
